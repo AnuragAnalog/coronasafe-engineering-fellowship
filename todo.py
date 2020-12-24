@@ -14,13 +14,13 @@ class Todo():
             self.todo_file = open('todo.txt', 'r+')
 
             for task in self.todo_file:
-                self.todo_tasks.append(task)
+                self.todo_tasks.append(task.strip('\n'))
 
         if os.path.isfile('done.txt'):
             self.done_file = open('done.txt', 'r+')
 
             for task in self.done_file:
-                self.done_tasks.append(task)
+                self.done_tasks.append(task.strip('\n'))
 
     def add_task(self, task_name, error=False):
         if error:
@@ -30,14 +30,24 @@ class Todo():
         if not os.path.isfile('todo.txt'):
             self.todo_file = open('todo.txt', 'x')
 
-        # tn = task_name[0]
-        # self.todo_file.write(tn+'\n')
-        # self.todo_tasks.append(tn)
+        tn = task_name[0]
+
+        self.todo_file.write(tn+'\n')
+        self.todo_file.close()
+
+        print("Added todo: \"{}\"".format(tn))
+        self.todo_tasks.append(tn)
 
         return
 
     def list_tasks(self):
-        pass
+        if len(self.todo_tasks) == 0:
+            print("There are no pending todos!")
+
+        for i, task in enumerate(self.todo_tasks[::-1], start=-len(self.todo_tasks)):
+            print("[{}] {}".format(abs(i), task))
+
+        return
 
     def delete_task(self, task_num, error=False):
         if error:
