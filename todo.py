@@ -11,16 +11,14 @@ class Todo():
         self.done_tasks = list()
 
         if os.path.isfile('todo.txt'):
-            self.todo_file = open('todo.txt', 'r+')
-
-            for task in self.todo_file:
-                self.todo_tasks.append(task.strip('\n'))
+            with open('todo.txt', 'r') as self.todo_file:
+                for task in self.todo_file:
+                    self.todo_tasks.append(task.strip('\n'))
 
         if os.path.isfile('done.txt'):
-            self.done_file = open('done.txt', 'r+')
-
-            for task in self.done_file:
-                self.done_tasks.append(task.strip('\n'))
+            with open('done.txt', 'r') as self.done_file:
+                for task in self.done_file:
+                    self.done_tasks.append(task.strip('\n'))
 
     def add_task(self, task_name, error=False):
         if error:
@@ -29,6 +27,8 @@ class Todo():
 
         if not os.path.isfile('todo.txt'):
             self.todo_file = open('todo.txt', 'x')
+        else:
+            self.todo_file = open('todo.txt', 'a')
 
         tn = task_name[0]
 
@@ -55,9 +55,11 @@ class Todo():
             return
 
         tn = task_num[0]
-        if len(self.todo_tasks) == 0:
+        if tn not in range(len(self.todo_tasks)):
             print("Error: todo #{} does not exist. Nothing deleted.".format(tn))
             return
+
+        _ = self.todo_tasks.pop(tn-1)
 
     def done_task(self, task_num, error=False):
         if error:
@@ -65,7 +67,7 @@ class Todo():
             return
 
         tn = task_num[0]
-        if len(self.todo_tasks) == 0:
+        if tn not in range(len(self.todo_tasks)):
             print("Error: todo #{} does not exist.".format(tn))
             return
 
