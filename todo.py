@@ -49,27 +49,47 @@ class Todo():
 
         return
 
-    def delete_task(self, task_num, error=False):
+    def delete_task(self, task_num, error=False, from_done=False):
         if error:
             print("Error: Missing NUMBER for deleting todo.")
             return
 
-        tn = task_num[0]
-        if tn not in range(len(self.todo_tasks)):
+        tn = int(task_num[0])
+        if tn not in range(1, len(self.todo_tasks)+1):
             print("Error: todo #{} does not exist. Nothing deleted.".format(tn))
             return
 
         _ = self.todo_tasks.pop(tn-1)
+        if not from_done:
+            print("Deleted todo #{}".format(tn))
+
+        with open('todo.txt', 'w') as self.todo_file:
+            for task in self.todo_tasks:
+                self.todo_file.write(task+"\n")
+
+        return
 
     def done_task(self, task_num, error=False):
         if error:
             print("Error: Missing NUMBER for marking todo as done.")
             return
 
-        tn = task_num[0]
+        tn = int(task_num[0])
         if tn not in range(len(self.todo_tasks)):
             print("Error: todo #{} does not exist.".format(tn))
             return
+
+        self.delete_task(task_num, from_done=True)
+        print("Marked todo #{} as done.".format(tn))
+
+        if os.path.isfile('done.txt'):
+            self.done_file = open('done.txt', 'a')
+        else:
+            self.done_file = open('done.txt', 'w')
+
+        done_task = self.todo_tasks.pop(tn-1)
+        now_date = strftime("%Y-%m-%d")
+        self.done_file.write('x {} {}\n'.format(now_date, done_task))
 
     def help(self):
         print("Usage :-")
@@ -115,4 +135,4 @@ if __name__ == "__main__":
         elif sys.argv[1] == "done":
             todo.done_task(arg, error=add_del_done_error)
         else:
-            pass
+            raise ValueError("{}: Not yet Implemented".format(sys.argv[1]))
